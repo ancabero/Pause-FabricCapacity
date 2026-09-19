@@ -1,0 +1,22 @@
+Connect-AzAccount -Identity
+
+$subscriptionId    = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+$resourceGroupName = "tu-resource-group"
+$capacityName      = "tu-capacidad-fabric"
+
+$uri = "https://management.azure.com/subscriptions/$subscriptionId/resourceGroups/$resourceGroupName/providers/Microsoft.Fabric/capacities/$capacityName/suspend?api-version=2023-11-01"
+
+$token   = (Get-AzAccessToken -ResourceUrl "https://management.azure.com").Token
+$headers = @{
+    Authorization  = "Bearer $token"
+    "Content-Type" = "application/json"
+}
+
+try {
+    Invoke-RestMethod -Uri $uri -Method POST -Headers $headers
+    Write-Output "Capacidad '$capacityName' pausada correctamente - $(Get-Date)"
+}
+catch {
+    Write-Error "Error al pausar la capacidad: $_"
+    throw
+}
